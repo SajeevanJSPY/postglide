@@ -19,3 +19,6 @@ fmt:
 clean:
 	@rm -rf postglide
 
+pg-postglide-start:
+	@docker compose up -d
+

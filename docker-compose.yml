@@ -1,0 +1,16 @@
+services:
+    postgres:
+        image: postgres:latest
+        container_name: postglide-postgres
+        restart: always
+        environment:
+            - POSTGRES_USER=${META_USER}
+            - POSTGRES_PASSWORD=${META_PASSWORD}
+            - POSTGRES_DB=${META_SCHEMA_DATABASE}
+        ports:
+            - '${META_PORT}:${META_PORT}'
+        volumes:
+            - pgdata:/var/lib/postgresql/data
+
+volumes:
+    pgdata:
