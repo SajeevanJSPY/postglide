@@ -31,12 +31,13 @@ func StartPgContainer(ctx context.Context) *PgContainer {
 		postgres.WithDatabase(PgDbName),
 		postgres.WithUsername(PgUserName),
 		postgres.WithPassword(PgPassword),
+		postgres.BasicWaitStrategies(),
 	)
 	if err != nil {
 		panic(err)
 	}
 
-	connStr, err := pgContainer.ConnectionString(ctx)
+	connStr, err := pgContainer.ConnectionString(ctx, "sslmode=disable")
 	if err != nil {
 		panic(err)
 	}
