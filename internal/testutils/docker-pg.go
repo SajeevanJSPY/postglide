@@ -21,7 +21,9 @@ var (
 
 type PgContainer struct {
 	container postgres.PostgresContainer
-	URI       string
+	Dsn       string
+	Host      string
+	Port      uint16
 }
 
 func StartPgContainer(ctx context.Context) *PgContainer {
@@ -42,9 +44,14 @@ func StartPgContainer(ctx context.Context) *PgContainer {
 		panic(err)
 	}
 
+	host, _ := pgContainer.Host(ctx)
+	port, _ := pgContainer.MappedPort(ctx, "5432")
+
 	return &PgContainer{
 		container: *pgContainer,
-		URI:       connStr,
+		Dsn:       connStr,
+		Host:      host,
+		Port:      uint16(port.Int()),
 	}
 }
 
