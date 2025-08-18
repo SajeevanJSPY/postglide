@@ -3,6 +3,7 @@ package pgx_test
 import (
 	"context"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 
@@ -19,6 +20,39 @@ func TestMain(m *testing.M) {
 	m.Run()
 
 	pgContainer.Close(ctx)
+}
+
+func TestPgxConnection(t *testing.T) {
+	assert := assert.New(t)
+
+	ctx := context.Background()
+
+	// connection context
+	connCtx, cancel := context.WithCancel(ctx)
+	defer cancel()
+
+	// query context with timeout
+	queryCtx, cancel := context.WithTimeout(ctx, 200*time.Millisecond)
+	defer cancel()
+
+	connInfo := pgx.NewConnectionInfo(
+		pgx.WithHost(pgContainer.Host),
+		pgx.WithPort(pgContainer.Port),
+		pgx.WithUser(testutils.PgUserName),
+		pgx.WithDatabase(testutils.PgDbName),
+	)
+
+	pgxConn, err := pgx.NewPgxConnection(connInfo)
+	assert.NoError(err)
+	assert.NotNil(pgxConn)
+	defer func() {
+		assert.NoError(pgxConn.Close(connCtx))
+	}()
+
+	err = pgxConn.Establish(connCtx, testutils.PgPassword)
+	assert.NoError(err)
+
+	assert.True(pgxConn.Ping(queryCtx))
 }
 
 func TestConnInfo(t *testing.T) {
