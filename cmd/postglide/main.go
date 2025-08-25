@@ -1,7 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"postglide.io/postglide/cmd/postglide/cli"
+)
 
 func main() {
-	fmt.Println("welcome to postglide")
+	cli.Execute()
 }
